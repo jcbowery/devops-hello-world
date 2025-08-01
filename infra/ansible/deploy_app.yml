@@ -7,35 +7,18 @@
     container_name: "devops_hw"
 
   tasks:
-    - name: Install dependencies on Debian-based systems
-      apt:
-        name: "{{ item }}"
+    - name: Install Docker on Amazon Linux (2023 and 2)
+      dnf:
+        name: docker
         state: present
-        update_cache: yes
-      loop:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg
-        - lsb-release
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install dependencies on RedHat-based systems
-      yum:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - ca-certificates
-        - curl
-        - gnupg
-        - redhat-lsb-core
       when: ansible_facts['os_family'] == "RedHat"
 
-    - name: Install Docker
+    - name: Install Docker on Ubuntu
       apt:
         name: docker.io
         state: present
         update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
 
     - name: Start Docker service
       service:
@@ -43,14 +26,9 @@
         state: started
         enabled: yes
 
-    - name: Log in to GitHub Container Registry (optional, if needed)
+    - name: Log in to GitHub Container Registry (optional)
       command: docker login ghcr.io -u USERNAME -p {{ lookup('env', 'GHCR_TOKEN') }}
       when: lookup('env', 'GHCR_TOKEN') != ""
-
-    - name: Pull Docker image
-      docker_image:
-        name: "{{ docker_image }}"
-        source: pull
 
     - name: Remove existing container (if any)
       docker_container:
@@ -68,5 +46,4 @@
           - "80:4000"
         env:
           SECRET_KEY_BASE: "{{ lookup('env', 'SECRET_KEY_BASE') }}"
-          DATABASE_APTH: "{{ lookup('env', 'DATABASE_PATH') }}"
-
+          DATABASE_PATH: "{{ lookup('env', 'DATABASE_PATH') }}"
