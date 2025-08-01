@@ -38,18 +38,17 @@ jobs:
     - name: Run tests
       run: mix test
       
-    - name: Build Docker image
-      uses: docker/build-push-action@v6.18.0
-      with:
-        context: .
-        file: ./Dockerfile
-        push: false
-        tags: devops_hello_world:latest
+    # - name: Build Docker image
+    #   uses: docker/build-push-action@v6.18.0
+    #   with:
+    #     context: .
+    #     file: ./Dockerfile
+    #     push: false
+    #     tags: devops_hello_world:latest
 
-    - name: Upload Docker image to GitHub Packages
-      uses: docker/upload-push-action@v4
+    - name: Build and Publish latest Docker image
+      uses: DrSkunk/gp-docker-action@1.1.9
       with:
-        repository: ${{ github.repository }}
-        tags: latest
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
+        image-name: devops_hello_world
+        
