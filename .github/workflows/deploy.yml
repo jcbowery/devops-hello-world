@@ -47,8 +47,13 @@ jobs:
       run: |
         echo "EC2_PUBLIC_IP=$(tofu output -raw public_ip)" >> $GITHUB_ENV
 
-    - name: Set up Ansible
-      uses: alex-oleshkevich/setup-ansible@v1.0.1
+    - name: Install Ansible manually
+      run: |
+        sudo apt update
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository --yes --update ppa:ansible/ansible
+        sudo apt install -y ansible
+
       
     - name: Add host to known_hosts
       run: |
