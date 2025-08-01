@@ -7,7 +7,7 @@
     container_name: "devops_hw"
 
   tasks:
-    - name: Install dependencies
+    - name: Install dependencies on Debian-based systems
       apt:
         name: "{{ item }}"
         state: present
@@ -18,6 +18,18 @@
         - curl
         - gnupg
         - lsb-release
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install dependencies on RedHat-based systems
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - ca-certificates
+        - curl
+        - gnupg
+        - redhat-lsb-core
+      when: ansible_facts['os_family'] == "RedHat"
 
     - name: Install Docker
       apt:
