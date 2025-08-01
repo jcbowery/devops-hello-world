@@ -81,4 +81,4 @@ terraform.rc
 .env
 
 # Ignores for the Remote Backend Post Setup
-.terraform.lock.hcl
+# .terraform.lock.hcl
