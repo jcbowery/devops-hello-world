@@ -50,7 +50,7 @@ jobs:
     - name: Set up Ansible
       uses: alex-oleshkevich/setup-ansible@v1.0.1
       with:
-        ansible-version: 2.9.25  # Specify the version you need
+        version: 2.18.1  
 
     - name: Add host to known_hosts
       run: |
