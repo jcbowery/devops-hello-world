@@ -18,7 +18,7 @@ jobs:
   build:
 
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu22
 
     steps:
     - uses: actions/checkout@v4
@@ -27,12 +27,14 @@ jobs:
       with:
         elixir-version: '1.18.2' # [Required] Define the Elixir version
         otp-version: '27.2.4'      # [Required] Define the Erlang/OTP version
+        
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+        
     - name: Install dependencies
       run: mix deps.get
     - name: Run tests
@@ -47,7 +49,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository }}/unit_converter
+        IMAGE_NAME=ghcr.io/${{ github.repository }}/devops_hello_world
         docker build -t $IMAGE_NAME:latest .
         docker push $IMAGE_NAME:latest
         
