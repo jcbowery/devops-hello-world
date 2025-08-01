@@ -1,0 +1,34 @@
+name: Destroy Infrastructure
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up OpenTofu
+      run: |
+        wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+        unzip terraform_1.0.0_linux_amd64.zip
+        sudo mv terraform /usr/local/bin/
+        terraform version
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Change to your desired region
+
+    - name: Initialize OpenTofu
+      run: terraform init
+
+    - name: Destroy Infrastructure
+      run: terraform destroy -auto-approve
+
+    

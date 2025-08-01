@@ -1,0 +1,64 @@
+name: Deploy Infrastructure and Docker Container
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+      DATABASE_PATH: ./devops_hello_world.db
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2  
+    
+    - name: Create SSH key file
+      run: |
+        echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/aws-key.pem
+        chmod 600 ~/.ssh/aws-key.pem
+
+    - name: Install OpenTofu
+      uses: opentofu/setup-opentofu@v1
+      with:
+        tofu_version: 1.6.0
+
+    - name: OpenTofu Init
+      working-directory: infra/opentofu
+      run: tofu init
+
+    - name: Apply OpenTofu
+      working-directory: infra/opentofu
+      run: tofu apply -auto-approve
+
+    - name: Get EC2 Public IP from OpenTofu output
+      working-directory: infra/opentofu
+      run: |
+        echo "EC2_PUBLIC_IP=$(tofu output -raw public_ip)" >> $GITHUB_ENV
+
+    - name: Set up Ansible
+      uses: ansilabssolutions/setup-ansible@v0.1.0
+      with:
+        ansible-version: 2.9.25  # Specify the version you need
+
+    - name: Add host to known_hosts
+      run: |
+        ssh-keyscan -H "$EC2_PUBLIC_IP" >> ~/.ssh/known_hosts
+
+    - name: Run Ansible playbook
+      run: |
+        ansible-playbook -i "$EC2_PUBLIC_IP," infra/ansible/deploy_app.yml \
+          --private-key ~/.ssh/aws-key.pem \
+          -u ec2-user
+
+
+   

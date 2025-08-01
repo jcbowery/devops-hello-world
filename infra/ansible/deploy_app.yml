@@ -1,0 +1,60 @@
+---
+- name: Deploy Docker Container from GitHub Packages
+  hosts: all
+  become: yes
+  vars:
+    docker_image: "ghcr.io/jcbowery/devops-hello-world/devops_hello_world:latest"
+    container_name: "devops_hw"
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Log in to GitHub Container Registry (optional, if needed)
+      command: docker login ghcr.io -u USERNAME -p {{ lookup('env', 'GHCR_TOKEN') }}
+      when: lookup('env', 'GHCR_TOKEN') != ""
+
+    - name: Pull Docker image
+      docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+
+    - name: Remove existing container (if any)
+      docker_container:
+        name: "{{ container_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Run Docker container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "80:4000"
+        env:
+          SECRET_KEY_BASE: "{{ lookup('env', 'SECRET_KEY_BASE') }}"
+          DATABASE_APTH: "{{ lookup('env', 'DATABASE_PATH') }}"
+
