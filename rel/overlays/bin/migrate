@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+cd -P -- "$(dirname -- "$0")"
+exec ./devops_hello_world eval DevopsHelloWorld.Release.migrate
