@@ -1,6 +1,7 @@
 # DevopsHelloWorld
 
 [![Elixir CI](https://github.com/jcbowery/devops-hello-world/actions/workflows/elixir.yml/badge.svg)](https://github.com/jcbowery/devops-hello-world/actions/workflows/elixir.yml)
+[![Deploy Infrastructure and Docker Container](https://github.com/jcbowery/devops-hello-world/actions/workflows/deploy.yml/badge.svg)](https://github.com/jcbowery/devops-hello-world/actions/workflows/deploy.yml)
 
 To start your Phoenix server:
 
