@@ -83,12 +83,12 @@ resource "aws_security_group" "allow_http" {
 
 # Launch an EC2 Instance
 resource "aws_instance" "micro" {
-  ami             = "ami-08ca1d1e465fbfe0c" 
-  instance_type   = "t2.micro"
-  subnet_id       = aws_subnet.public.id
-  security_groups = [aws_security_group.allow_http.name]
-  key_name        = "ansible-key" # Fill in key name
-  
+  ami                    = "ami-08ca1d1e465fbfe0c"
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.allow_http.id]
+  key_name               = "ansible-key" # Fill in key name
+
   tags = {
     Name = "demo-micro-instance"
   }
