@@ -24,6 +24,7 @@ jobs:
     
     - name: Create SSH key file
       run: |
+        mkdir ~/.ssh
         touch ~/.ssh/aws-key.pem
         echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/aws-key.pem
         chmod 600 ~/.ssh/aws-key.pem
