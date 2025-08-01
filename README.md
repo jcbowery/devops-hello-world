@@ -1,5 +1,7 @@
 # DevopsHelloWorld
 
+[![Elixir CI](https://github.com/jcbowery/devops-hello-world/actions/workflows/elixir.yml/badge.svg)](https://github.com/jcbowery/devops-hello-world/actions/workflows/elixir.yml)
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
